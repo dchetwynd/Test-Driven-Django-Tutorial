@@ -1,7 +1,11 @@
 from django.test import LiveServerTestCase
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 class AdminSiteTest(LiveServerTestCase):
+    fixtures = ['admin_user.json']
+
     def setUp(self):
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(3)
@@ -14,3 +18,15 @@ class AdminSiteTest(LiveServerTestCase):
 
         body = self.browser.find_element_by_tag_name('body')
         self.assertIn('Django administration', body.text)
+        
+        username_field = self.browser.find_element_by_name('username')
+        username_field.send_keys('admin')
+
+        password_field = self.browser.find_element_by_name('password')
+        password_field.send_keys('admin')
+        password_field.send_keys(Keys.RETURN)
+
+        body = WebDriverWait(self.browser, 10).until(lambda browser: browser.find_element_by_tag_name('body'))
+
+        #self.browser.find_element_by_tag_name('body')
+        self.assertIn('Site administration', body.text)
