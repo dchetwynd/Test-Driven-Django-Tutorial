@@ -28,5 +28,7 @@ class AdminSiteTest(LiveServerTestCase):
 
         body = WebDriverWait(self.browser, 10).until(lambda browser: browser.find_element_by_tag_name('body'))
 
-        #self.browser.find_element_by_tag_name('body')
         self.assertIn('Site administration', body.text)
+
+        polls_links = self.browser.find_elements_by_link_text('Polls')
+        self.assertEquals(len(polls_links), 2)
