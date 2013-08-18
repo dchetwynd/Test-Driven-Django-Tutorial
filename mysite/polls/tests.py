@@ -28,6 +28,17 @@ class PollModelTest(TestCase):
 	p.question = "How is babby formed?"
 	self.assertEquals("How is babby formed?", unicode(p))
 	
+    def test_poll_can_tell_you_its_total_number_of_votes(self):
+        p = Poll(question='where', pub_date=timezone.now())
+	p.save()
+
+	c1 = Choice(poll=p, choice='here', votes=0)
+	c1.save()
+	c2 = Choice(poll=p, choice='there', votes=0)
+	c2.save()
+
+	self.assertEquals(0, p.total_votes())
+
 class ChoiceModelTest(TestCase):
     def test_creating_some_choices_for_a_poll(self):
         poll = Poll()
@@ -48,3 +59,25 @@ class ChoiceModelTest(TestCase):
 	self.assertEquals(choice, choice_from_db)
 	self.assertEquals("doin' fine...", choice_from_db.choice)
 	self.assertEquals(3, choice_from_db.votes)
+
+    def test_choice_defaults(self):
+        choice = Choice()
+	self.assertEquals(0, choice.votes)
+
+    def test_choice_can_calculate_its_own_percentage_of_votes(self):
+        poll = Poll(question='who?', pub_date=timezone.now())
+	poll.save()
+	choice1 = Choice(poll=poll, choice='me', votes=2)
+	choice1.save()
+	choice2 = Choice(poll=poll, choice='you', votes=1)
+	choice2.save()
+
+	self.assertEquals(100 * 2 / 3.0, choice1.percentage())
+	self.assertEquals(100 * 1 / 3.0, choice2.percentage())
+
+	choice1.votes = 0
+	choice1.save()
+	choice2.votes = 0
+	choice2.save()
+	self.assertEquals(0, choice1.percentage())
+	self.assertEquals(0, choice2.percentage())

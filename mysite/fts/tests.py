@@ -90,9 +90,9 @@ class AdminSiteTest(LiveServerTestCase):
 
 	for poll_info in [POLL1]:
 	    self.browser.find_elements_by_link_text('Polls')[1].click()
-	    self.browser.find_elements_by_link_text('Add poll').click()
+	    self.browser.find_element_by_link_text('Add poll').click()
 
-	    question_field = self.browser.find_element_by_link_text('Today').click()
+	    question_field = self.browser.find_element_by_name('question')
 	    question_field.send_keys(poll_info.question)
 	    self.browser.find_element_by_link_text('Today').click()
 	    self.browser.find_element_by_link_text('Now').click()
